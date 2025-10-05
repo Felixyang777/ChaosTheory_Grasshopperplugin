@@ -2,11 +2,12 @@ using Grasshopper;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace ChaosTheory
 {
-    public class ChaosTheoryComponent : GH_Component
+    public class LorenzAttractor : GH_Component
     {
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
@@ -15,10 +16,10 @@ namespace ChaosTheory
         /// Subcategory the panel. If you use non-existing tab or panel names, 
         /// new tabs/panels will automatically be created.
         /// </summary>
-        public ChaosTheoryComponent()
-          : base("ChaosTheoryComponent", "ASpi",
-            "Construct an Archimedean, or arithmetic, spiral given its radii and number of turns.",
-            "Curve", "Primitive")
+        public LorenzAttractor()
+          : base("LorenzAttractor", "LA",
+            "Construct a LorenzAttractor.",
+            "ChaosTheory", "Attractor")
         {
         }
 
@@ -31,10 +32,13 @@ namespace ChaosTheory
             // You can often supply default values when creating parameters.
             // All parameters must have the correct access type. If you want 
             // to import lists or trees of values, modify the ParamAccess flag.
-            pManager.AddPlaneParameter("Plane", "P", "Base plane for spiral", GH_ParamAccess.item, Plane.WorldXY);
-            pManager.AddNumberParameter("Inner Radius", "R0", "Inner radius for spiral", GH_ParamAccess.item, 1.0);
-            pManager.AddNumberParameter("Outer Radius", "R1", "Outer radius for spiral", GH_ParamAccess.item, 10.0);
-            pManager.AddIntegerParameter("Turns", "T", "Number of turns between radii", GH_ParamAccess.item, 10);
+
+            pManager.AddPointParameter("StartPoint", "P", "StartPoint", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Sigma", "¦Ò", "Sigma", GH_ParamAccess.item, 10.0);
+            pManager.AddNumberParameter("Rou", "¦Ñ", "Rou", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Beta", "¦Â", "Beta", GH_ParamAccess.item, (double)8 / 3);
+            pManager.AddNumberParameter("DeltaT", "¦¤t", "DeltaT", GH_ParamAccess.item, 0.01);
+            pManager.AddIntegerParameter("Iterations", "I", "Number of  iterations", GH_ParamAccess.item, 100);
 
             // If you want to change properties of certain parameters, 
             // you can use the pManager instance to access them by index:
@@ -48,8 +52,10 @@ namespace ChaosTheory
         {
             // Use the pManager object to register your output parameters.
             // Output parameters do not have default values, but they too must have the correct access type.
-            pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
 
+            pManager.AddPointParameter("Points", "P", "LorenzOscillator", GH_ParamAccess.list);
+            pManager.AddCurveParameter("Curve", "C", "LorenzOscillator", GH_ParamAccess.item);
+            
             // Sometimes you want to hide a specific parameter from the Rhino preview.
             // You can use the HideParameter() method as a quick way:
             //pManager.HideParameter(0);
@@ -64,66 +70,58 @@ namespace ChaosTheory
         {
             // First, we need to retrieve all data from the input parameters.
             // We'll start by declaring variables and assigning them starting values.
-            Plane plane = Plane.WorldXY;
-            double radius0 = 0.0;
-            double radius1 = 0.0;
-            int turns = 0;
+
+            Point3d StartPoint = Point3d.Origin;
+            double Sigma = 0.0;
+            double Rou = 0.0;
+            double Beta = 0.0;
+            double DeltaT = 0.0;
+            int Iterations = 100;
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
-            if (!DA.GetData(0, ref plane)) return;
-            if (!DA.GetData(1, ref radius0)) return;
-            if (!DA.GetData(2, ref radius1)) return;
-            if (!DA.GetData(3, ref turns)) return;
-
+            if (!DA.GetData(0, ref StartPoint)) return;
+            if (!DA.GetData(1, ref Sigma)) return;
+            if (!DA.GetData(2, ref Rou)) return;
+            if (!DA.GetData(3, ref Beta)) return;
+            if (!DA.GetData(4, ref DeltaT)) return;
+            if (!DA.GetData(5, ref Iterations)) return;
             // We should now validate the data and warn the user if invalid data is supplied.
-            if (radius0 < 0.0)
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Inner radius must be bigger than or equal to zero");
-                return;
-            }
-            if (radius1 <= radius0)
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Outer radius must be bigger than the inner radius");
-                return;
-            }
-            if (turns <= 0)
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Spiral turn count must be bigger than or equal to one");
-                return;
-            }
-
+            List<Point3d> LorenzOscillatorPoints = CreatLorenzOscillator(StartPoint, Sigma, Rou, Beta, DeltaT, Iterations);
+            IEnumerable __enum_points = (IEnumerable)LorenzOscillatorPoints;
+            DA.SetDataList(0, __enum_points);
             // We're set to create the spiral now. To keep the size of the SolveInstance() method small, 
-            // The actual functionality will be in a different method:
-            Curve spiral = CreateSpiral(plane, radius0, radius1, turns);
 
             // Finally assign the spiral to the output parameter.
-            DA.SetData(0, spiral);
         }
 
-        Curve CreateSpiral(Plane plane, double r0, double r1, Int32 turns)
+        List<Point3d> newpoints;
+        Point3d point;
+        List<Point3d> CreatLorenzOscillator(Point3d StartPoint, double Sigma, double Rou, double Beta, double DeltaT,int Iterations)
         {
-            Line l0 = new Line(plane.Origin + r0 * plane.XAxis, plane.Origin + r1 * plane.XAxis);
-            Line l1 = new Line(plane.Origin - r0 * plane.XAxis, plane.Origin - r1 * plane.XAxis);
+            point = StartPoint;
 
-            Point3d[] p0;
-            Point3d[] p1;
+            double x0=point.X;
+            double y0=point.Y;
+            double z0=point.Z;
 
-            l0.ToNurbsCurve().DivideByCount(turns, true, out p0);
-            l1.ToNurbsCurve().DivideByCount(turns, true, out p1);
+            newpoints = new List<Point3d>();
 
-            PolyCurve spiral = new PolyCurve();
-
-            for (int i = 0; i < p0.Length - 1; i++)
+            for (int i = 0; i < Iterations; i++)
             {
-                Arc arc0 = new Arc(p0[i], plane.YAxis, p1[i + 1]);
-                Arc arc1 = new Arc(p1[i + 1], -plane.YAxis, p0[i + 1]);
-
-                spiral.Append(arc0);
-                spiral.Append(arc1);
+                point = new Point3d(x0, y0, z0);
+                newpoints.Add(point);
+                double deltax = Sigma * (y0 - x0);
+                double deltay = x0 * (Rou - z0) - y0;
+                double deltaz = x0 * y0 - Beta * z0;
+                x0 += deltax * DeltaT;
+                y0 += deltay * DeltaT;
+                z0 += deltaz * DeltaT;
             }
 
-            return spiral;
+
+            return newpoints;
+
         }
 
         /// <summary>
@@ -147,6 +145,6 @@ namespace ChaosTheory
         /// It is vital this Guid doesn't change otherwise old ghx files 
         /// that use the old ID will partially fail during loading.
         /// </summary>
-        public override Guid ComponentGuid => new Guid("16db5ec4-36f3-49d1-85b5-2cb71bf61a90");
+        public override Guid ComponentGuid => new Guid("8F39DA21-05AA-47F5-B22C-A91AFC4479F2");
     }
 }
