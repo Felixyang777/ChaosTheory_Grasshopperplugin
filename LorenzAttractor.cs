@@ -87,7 +87,7 @@ namespace ChaosTheory
             if (!DA.GetData(4, ref DeltaT)) return;
             if (!DA.GetData(5, ref Iterations)) return;
             // We should now validate the data and warn the user if invalid data is supplied.
-            List<Point3d> LorenzOscillatorPoints = CreatLorenzOscillator(StartPoint, Sigma, Rou, Beta, DeltaT, Iterations);
+            List<Point3d> LorenzOscillatorPoints = CreateLorenzAttractor(StartPoint, Sigma, Rou, Beta, DeltaT, Iterations);
             IEnumerable __enum_points = (IEnumerable)LorenzOscillatorPoints;
             DA.SetDataList(0, __enum_points);
             // We're set to create the spiral now. To keep the size of the SolveInstance() method small, 
@@ -97,7 +97,7 @@ namespace ChaosTheory
 
         List<Point3d> newpoints;
         Point3d point;
-        List<Point3d> CreatLorenzOscillator(Point3d StartPoint, double Sigma, double Rou, double Beta, double DeltaT,int Iterations)
+        List<Point3d> CreateLorenzAttractor(Point3d StartPoint, double Sigma, double Rou, double Beta, double DeltaT,int Iterations)
         {
             point = StartPoint;
 
