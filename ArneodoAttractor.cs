@@ -45,10 +45,7 @@ namespace ChaosTheory
             Point3d StartPoint = Point3d.Origin;
             double Alpha = 0.0;
             double Beta = 0.0;
-            double Gama = 0.0;
             double Delta = 0.0;
-            double Epsilon = 0.0;
-            double Zeta = 0.0;
             double DeltaT = 0.0;
             int Iterations = 100;
 
