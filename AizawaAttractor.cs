@@ -103,8 +103,8 @@ namespace ChaosTheory
             {
 
                 newpoints.Add(point);
-                double dy = Delta * x + (z - Beta) * y;
                 double dx = (z - Beta) * x - Delta * y;
+                double dy = Delta * x + (z - Beta) * y;
                 double dz = Gama + Alpha * z - Math.Pow(z, 3) / 3 - (Math.Pow(x, 2) + Math.Pow(y, 2)) * (1 + Epsilon * z) + Zeta * z * Math.Pow(x, 3);
 
                 x += dx * DeltaT;
