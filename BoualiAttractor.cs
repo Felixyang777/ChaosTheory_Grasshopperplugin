@@ -21,7 +21,7 @@ namespace ChaosTheory
 
             pManager.AddPointParameter("StartPoint", "P", "StartPoint", GH_ParamAccess.item, new Point3d(1, 0, 0));
             pManager.AddNumberParameter("Alpha", "α", "Alpha", GH_ParamAccess.item, 0.3);
-            pManager.AddNumberParameter("Delta", "δ", "Delta", GH_ParamAccess.item, 1);
+            pManager.AddNumberParameter("Sigma", "ς", "Sigma", GH_ParamAccess.item, 1);
             pManager.AddNumberParameter("DeltaT", "Δt", "DeltaT", GH_ParamAccess.item, 0.01);
             pManager.AddIntegerParameter("Iterations", "I", "Number of  iterations", GH_ParamAccess.item, 1000);
 
@@ -43,13 +43,13 @@ namespace ChaosTheory
 
             Point3d StartPoint = Point3d.Origin;
             double Alpha = 0.0;
-            double Delta = 0.0;
+            double Sigma = 0.0;
             double DeltaT = 0.0;
             int Iterations = 100;
 
             if (!DA.GetData(0, ref StartPoint)) return;
             if (!DA.GetData(1, ref Alpha)) return;
-            if (!DA.GetData(2, ref Delta)) return;
+            if (!DA.GetData(2, ref Sigma)) return;
             if (!DA.GetData(3, ref DeltaT)) return;
             if (!DA.GetData(4, ref Iterations)) return;
 
@@ -64,7 +64,7 @@ namespace ChaosTheory
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Iterations must be positive");
                 return;
             }
-            List<Point3d> BoualiAttractorPoints = GenerateBoualiAttractor(StartPoint, Alpha, Delta, DeltaT, Iterations);
+            List<Point3d> BoualiAttractorPoints = GenerateBoualiAttractor(StartPoint, Alpha, Sigma, DeltaT, Iterations);
             IEnumerable __enum_points = (IEnumerable)BoualiAttractorPoints;
             DA.SetDataList(0, __enum_points);
 
@@ -75,7 +75,7 @@ namespace ChaosTheory
 
         List<Point3d> newpoints;
         Point3d point;
-        List<Point3d> GenerateBoualiAttractor(Point3d StartPoint, double Alpha, double Delta, double DeltaT, int Iterations)
+        List<Point3d> GenerateBoualiAttractor(Point3d StartPoint, double Alpha, double Sigma, double DeltaT, int Iterations)
         {
             point = StartPoint;
             newpoints = new List<Point3d>();
