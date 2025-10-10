@@ -18,7 +18,7 @@
     },
     "Rhino 7": {
       "commandName": "Executable",
-      "executablePath": "E:\\Rhino\\System\\Rhino.exe",
+      "executablePath": "E:\\Rhino 7\\System\\Rhino.exe",
       "commandLineArgs": "/runscript=\"_Grasshopper\""
     }
   }

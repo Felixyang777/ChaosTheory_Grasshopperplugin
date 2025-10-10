@@ -26,7 +26,7 @@ namespace ChaosTheory
             pManager.AddNumberParameter("Epsilon", "ε", "Epsilon", GH_ParamAccess.item, 0.65);
             pManager.AddNumberParameter("Zeta", "ζ", "Zeta", GH_ParamAccess.item, 20);
             pManager.AddNumberParameter("DeltaT", "Δt", "DeltaT", GH_ParamAccess.item, 0.001);
-            pManager.AddIntegerParameter("Iterations", "I", "Number of  iterations", GH_ParamAccess.item, 10000);
+            pManager.AddIntegerParameter("Iterations", "I", "Number of  iterations", GH_ParamAccess.item, 100000);
 
         }
 

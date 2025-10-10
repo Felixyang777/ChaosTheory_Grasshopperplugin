@@ -22,7 +22,7 @@ namespace ChaosTheory
             pManager.AddPointParameter("StartPoint", "P", "StartPoint", GH_ParamAccess.item, new Point3d(1, 2, 3));
             pManager.AddNumberParameter("Alpha", "α", "Alpha", GH_ParamAccess.item, 1.4);
             pManager.AddNumberParameter("DeltaT", "Δt", "DeltaT", GH_ParamAccess.item, 0.001);
-            pManager.AddIntegerParameter("Iterations", "I", "Number of  iterations", GH_ParamAccess.item, 10000);
+            pManager.AddIntegerParameter("Iterations", "I", "Number of  iterations", GH_ParamAccess.item, 100000);
 
         }
 

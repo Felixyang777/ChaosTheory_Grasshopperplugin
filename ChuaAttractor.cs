@@ -22,8 +22,8 @@ namespace ChaosTheory
             pManager.AddNumberParameter("Beta", "¦Â", "Beta parameter", GH_ParamAccess.item, 28.0);
             pManager.AddNumberParameter("M0", "M0", "M0 parameter for piecewise linear function", GH_ParamAccess.item, -1.143);
             pManager.AddNumberParameter("M1", "M1", "M1 parameter for piecewise linear function", GH_ParamAccess.item, -0.714);
-            pManager.AddNumberParameter("DeltaT", "¦¤t", "Time step", GH_ParamAccess.item, 0.01);
-            pManager.AddIntegerParameter("Iterations", "I", "Number of iterations", GH_ParamAccess.item, 10000);
+            pManager.AddNumberParameter("DeltaT", "¦¤t", "Time step", GH_ParamAccess.item, 0.001);
+            pManager.AddIntegerParameter("Iterations", "I", "Number of iterations", GH_ParamAccess.item, 100000);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)

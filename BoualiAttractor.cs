@@ -19,11 +19,11 @@ namespace ChaosTheory
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
 
-            pManager.AddPointParameter("StartPoint", "P", "StartPoint", GH_ParamAccess.item, new Point3d(1, 0, 0));
+            pManager.AddPointParameter("StartPoint", "P", "StartPoint", GH_ParamAccess.item, new Point3d(0.1, 0.1, 0.1));
             pManager.AddNumberParameter("Alpha", "α", "Alpha", GH_ParamAccess.item, 0.3);
             pManager.AddNumberParameter("Sigma", "ς", "Sigma", GH_ParamAccess.item, 1);
-            pManager.AddNumberParameter("DeltaT", "Δt", "DeltaT", GH_ParamAccess.item, 0.01);
-            pManager.AddIntegerParameter("Iterations", "I", "Number of  iterations", GH_ParamAccess.item, 1000);
+            pManager.AddNumberParameter("DeltaT", "Δt", "DeltaT", GH_ParamAccess.item, 0.001);
+            pManager.AddIntegerParameter("Iterations", "I", "Number of  iterations", GH_ParamAccess.item, 100000);
 
         }
 
